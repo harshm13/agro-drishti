@@ -1311,7 +1311,7 @@ st.markdown(
             {t['footer_text']}
         </div>
         <div style="font-size: 0.82rem; color: #4A5568; margin-bottom: 0.4rem;">
-            <a href="https://github.com" target="_blank" style="color: #2E7D32; font-weight: 600; text-decoration: none;">GitHub Repository</a> • Kisan Mitra AI Initiative
+            <a href="https://github.com/harshm13/agro-drishti" target="_blank" style="color: #2E7D32; font-weight: 600; text-decoration: none;">GitHub Repository</a> • Kisan Mitra AI Initiative
         </div>
         <div style="font-size: 0.82rem; font-weight: 600; color: #556B2F;">
             {t['footer_sub']}

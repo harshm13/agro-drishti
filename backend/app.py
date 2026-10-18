@@ -63,8 +63,8 @@ def predict():
         top_idx = int(top_indices[0])
         top_confidence = float(probs[top_idx] * 100)
         
-        # Confidence threshold check (70%)
-        if top_confidence < 70.0:
+        # Confidence threshold check (85%)
+        if top_confidence < 85.0:
             result = {
                 'disease': 'uncertain',
                 'confidence': float(round(top_confidence, 2)),
@@ -93,4 +93,4 @@ def health():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, port=port)
+    app.run(debug=True, port=port, use_reloader=False)

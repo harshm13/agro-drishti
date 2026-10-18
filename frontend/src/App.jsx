@@ -72,6 +72,7 @@ export default function App() {
   // API Mode toggle: 'real' (default, Flask API at :5000) or 'mock' (fallback/testing)
   const [apiMode, setApiMode] = useState('real');
   const [isModelLoaded, setIsModelLoaded] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Periodically check Flask backend health
   useEffect(() => {
@@ -105,6 +106,7 @@ export default function App() {
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     setPredictionResult(null); // Clear previous result until user clicks Analyze
+    setErrorMessage(null); // Clear any previous error
   };
 
   // Clear selected image handler
@@ -115,6 +117,7 @@ export default function App() {
     }
     setPreviewUrl(null);
     setPredictionResult(null);
+    setErrorMessage(null);
   };
 
   // Primary Analyze Action: sends selected image to Flask backend
@@ -123,25 +126,13 @@ export default function App() {
 
     // 1. Set isAnalyzing = true (triggers loading spinner)
     setIsAnalyzing(true);
+    setErrorMessage(null);
 
     try {
-      let result = null;
-
-      // 2. Call Flask Real API by default
-      if (apiMode === 'real') {
-        try {
-          result = await predictDisease(selectedImage);
-          if (!result || result.error) {
-            console.warn('Real Flask backend returned null/error. Engaging mock engine fallback:', result?.error);
-            result = await predictDiseaseMock(selectedImage);
-          }
-        } catch (backendError) {
-          console.warn('Real Flask backend unreachable at :5000. Engaging mock engine fallback:', backendError.message);
-          result = await predictDiseaseMock(selectedImage);
-        }
-      } else {
-        result = await predictDiseaseMock(selectedImage);
-      }
+      // 2. Call real Flask API in real mode, or mock ONLY in explicit demo mode
+      const result = apiMode === 'real'
+        ? await predictDisease(selectedImage)
+        : await predictDiseaseMock(selectedImage);
 
       if (result) {
         // 3. On success: update predictionResult, increment scanCount, add to recentScans
@@ -162,6 +153,8 @@ export default function App() {
       }
     } catch (err) {
       console.error('Analyze error:', err);
+      setPredictionResult(null);
+      setErrorMessage(`Backend se result nahi aaya: ${err.message}. Kya Flask server chal raha hai?`);
     } finally {
       // 4. Set isAnalyzing = false
       setIsAnalyzing(false);
@@ -245,7 +238,33 @@ export default function App() {
 
           {/* Right Column: 4. Result Card / Diagnosis & Bio-Solution (7 cols on lg) */}
           <div className="lg:col-span-7">
-            <ResultCard result={predictionResult} language={language} />
+            {errorMessage ? (
+              <div className="glass-card p-6 sm:p-8 rounded-2xl border-2 border-rose-400 dark:border-rose-800 bg-rose-50/95 dark:bg-rose-950/50 text-rose-900 dark:text-rose-200 shadow-lg space-y-4 animate-fade-in">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0 shadow-inner text-2xl font-bold">
+                    ⚠️
+                  </div>
+                  <div className="space-y-1.5 flex-1">
+                    <h3 className="font-extrabold text-base sm:text-lg text-rose-900 dark:text-rose-100">
+                      {isHi ? 'सर्वर से संपर्क नहीं हो पाया (Backend Connection Error)' : 'Backend Connection Error'}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-rose-800 dark:text-rose-200/90 font-medium leading-relaxed">
+                      {errorMessage}
+                    </p>
+                    <div className="pt-2 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                      <span>💡</span>
+                      <span>
+                        {isHi
+                          ? 'टर्मिनल में जांचें: `python backend/app.py` पोर्ट 5000 पर चालू होना चाहिए।'
+                          : 'Please check your terminal: verify `python backend/app.py` is running on port 5000.'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ResultCard result={predictionResult} language={language} />
+            )}
           </div>
         </div>
       </main>

@@ -1,27 +1,32 @@
 // src/utils/api.js
 const API_BASE = 'http://localhost:5000';
 
+/**
+ * Predict crop disease using Flask backend (http://localhost:5000/predict).
+ * Throws on network failure or backend error (no silent fallback).
+ */
 export const predictDisease = async (imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
 
-  try {
-    const response = await fetch(`${API_BASE}/predict`, {
-      method: 'POST',
-      body: formData,
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('API Error:', error);
-    return null;
+  const response = await fetch(`${API_BASE}/predict`, {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await response.json();
+
+  // Error ko throw karo, null return mat karo
+  if (!response.ok || data.error) {
+    throw new Error(data.error || `HTTP ${response.status}`);
   }
+  return data;
 };
 
-// Alias for backwards compatibility with existing UI components
+// Alias for backwards compatibility
 export const predictDiseaseReal = predictDisease;
 
 /**
- * Helper to check Flask API server health at http://localhost:5000/health
+ * Check Flask server health at http://localhost:5000/health
  */
 export const checkBackendHealth = async () => {
   try {
@@ -34,10 +39,9 @@ export const checkBackendHealth = async () => {
 };
 
 /**
- * Mock API function for testing and demo fallback when backend is offline
+ * Explicit demo mode mock function (ONLY used when user manually selects Demo/Mock mode in UI)
  */
 export const predictDiseaseMock = async (imageFile) => {
-  // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const mockResults = [
@@ -98,8 +102,8 @@ export const predictDiseaseMock = async (imageFile) => {
       confidence: 89.4,
       solution: {
         solution: 'Copper Oxychloride (कॉपर ऑक्सीक्लोराइड) ya Pseudomonas fluorescens bio-fungicide ka ghol chhidkein. Thand aur nami mein yeh rog tezi se failta hai.',
-        solution_hindi: 'कॉपर ऑक्सीक्लोराइड या ट्राइकोडर्मा विरिडी + जल निकासी सुधारें।',
-        solution_english: 'Use Copper Oxychloride or Trichoderma viride + improve drainage.',
+        solution_hindi: 'कॉपर ऑक्सीक्लोराइड या स्यूडोमोनास फ्लोरोसेंस बायो-एजेंट + जल निकासी सुधारें।',
+        solution_english: 'Use Copper Oxychloride or Pseudomonas fluorescens bio-fungicide + improve drainage.',
         dosage: '2.5 se 3 gram Copper Oxychloride prati litre paani YA 10 ml Pseudomonas liquid prati litre paani.',
         frequency: 'Harr 5 se 7 din mein lagataar chhidkaav karein jab tak naye patte swasth na aane lagein.',
         seasonal_tip: 'Kohre aur barsaat ke mausam mein paudho ke beech hawa aane dein. Jyada sankramit paudho ko turant khet se ukhaad kar jala dein.',
@@ -123,40 +127,29 @@ export const predictDiseaseMock = async (imageFile) => {
       disease: 'Tomato_Leaf_Mold',
       confidence: 86.1,
       solution: {
-        solution: 'Baking soda solution (बेकिंग सोडा) ya Bacillus subtilis bio-agent spray karein. Yeh patte ke pichhle hisse me safed-bhoore fafund ko control karta hai.',
-        solution_hindi: 'बेकिंग सोडा घोल + पौधों के बीच हवा का संचार बढ़ाएं।',
-        solution_english: 'Baking soda solution + increase spacing between plants for airflow.',
-        dosage: '5 gram Baking Soda + 2 ml refined/vegetable oil prati litre paani.',
+        solution: 'Bacillus subtilis bio-fungicide (बायो-कंट्रोल एजेंट) ka upyog karein. Yeh patte ke pichhle hisse me fafund ko natural tarike se rokta hai.',
+        solution_hindi: 'बैसिलस सबटिलिस बायो-कंट्रोल का छिड़काव करें और हवा का संचार बढ़ाएं।',
+        solution_english: 'Spray Bacillus subtilis bio-fungicide and improve canopy ventilation.',
+        dosage: '5 ml Bacillus subtilis liquid prati litre paani YA 5 gram bio-fungicide powder.',
         frequency: 'Harr 7 se 10 din mein dhoop nikalne par patto ke dono taraf achhi tarah spray karein.',
         seasonal_tip: 'Greenhouse ya khet mein ventilation (hawa) badhayein taaki nami 80% se kam rahe. Patte sukhe rehne se fungus nahi papti.',
         name_hi: 'टमाटर लीफ मोल्ड / पत्ता फफूंद (Leaf Mold)',
         name_en: 'Tomato Leaf Mold',
         severity: 'Low Risk',
         steps_hi: {
-          prep: '5 ग्राम बेकिंग सोडा और 2 मिली वनस्पति तेल प्रति लीटर हल्के गुनगुने पानी में घोलें, या बैसिलस सबटिलिस बायो-कंट्रोल का उपयोग करें।',
+          prep: '5 मिली बैसिलस सबटिलिस (Bacillus subtilis) बायो-फंगिसाइड प्रति लीटर ताजे पानी में अच्छी तरह मिलाएं।',
           apply: 'धूप निकलने पर हर 7 से 10 दिन में पत्तियों के पिछले हिस्से (निचली सतह) पर विशेष रूप से छिड़कें।',
           prevent: 'पॉलीहाउस या खेत में हवा का आवागमन बढ़ाएं ताकि नमी 80% से नीचे रहे। पत्तियों को सूखा रखना सबसे बड़ा बचाव है।',
         },
         steps_en: {
-          prep: 'Mix 5g baking soda and 2 ml vegetable oil per liter of lukewarm water.',
-          apply: 'Spray underside of foliage once weekly during sunny hours.',
+          prep: 'Dilute 5 ml of Bacillus subtilis bio-fungicide per liter of fresh water.',
+          apply: 'Spray underside of foliage once every 7 to 10 days during sunny hours.',
           prevent: 'Improve ventilation to keep canopy humidity below 80%.',
         },
       },
       is_healthy: false,
     },
   ];
-
-  const fileName = (imageFile?.name || '').toLowerCase();
-  if (fileName.includes('late') || fileName.includes('पछेती')) {
-    return mockResults[2];
-  } else if (fileName.includes('mold') || fileName.includes('फफूंद')) {
-    return mockResults[3];
-  } else if (fileName.includes('health') || fileName.includes('स्वस्थ')) {
-    return mockResults[1];
-  } else if (fileName.includes('early') || fileName.includes('अगेती')) {
-    return mockResults[0];
-  }
 
   return mockResults[Math.floor(Math.random() * mockResults.length)];
 };

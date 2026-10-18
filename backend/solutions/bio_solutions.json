@@ -44,26 +44,26 @@
     "audio_en": "AgroDrishti diagnosis: Late Blight detected. Spray 2.5 grams Copper Oxychloride or Pseudomonas solution every 5 to 7 days, and improve field air circulation."
   },
   "Tomato Leaf Mold": {
-    "solution": "Baking soda solution (बेकिंग सोडा) ya Bacillus subtilis bio-agent spray karein. Yeh patte ke pichhle hisse me safed-bhoore fafund ko control karta hai.",
-    "dosage": "5 gram Baking Soda + 2 ml refined/vegetable oil prati litre paani.",
-    "frequency": "Harr 7 se 10 din mein dhoop nikalne par patto ke dono taraf achhi tarah spray karein.",
+    "solution": "Bacillus subtilis bio-fungicide (बैसिलस सबटिलिस) ya Trichoderma viride ka ghol chhidkein. Yeh biological agent patte ke pichhle hisse me fafund ko natural tarike se khatam karta hai.",
+    "dosage": "5 se 8 ml Bacillus subtilis liquid (ya 5 gram bio-fungicide powder) prati litre paani.",
+    "frequency": "Harr 7 se 10 din mein subah ya dhoop nikalne par patto ke pichhle hisse par achhi tarah spray karein.",
     "seasonal_tip": "Greenhouse ya khet mein ventilation (hawa) badhayein taaki nami 80% se kam rahe. Patte sukhe rehne se fungus nahi papti.",
     "name_hi": "टमाटर लीफ मोल्ड / पत्ता फफूंद (Leaf Mold)",
     "name_en": "Tomato Leaf Mold",
     "status_hi": "⚠️ रोग ग्रस्त (पत्ता फफूंद)",
     "status_en": "⚠️ Infected (Leaf Mold)",
     "steps_hi": {
-      "prep": "5 ग्राम बेकिंग सोडा और 2 मिली वनस्पति तेल प्रति लीटर हल्के गुनगुने पानी में घोलें, या बैसिलस सबटिलिस बायो-कंट्रोल का उपयोग करें।",
+      "prep": "5 से 8 मिली बैसिलस सबटिलिस (Bacillus subtilis) या 5 ग्राम ट्राइकोडर्मा विरिडी बायो-फंगिसाइड प्रति लीटर ताजे पानी में अच्छी तरह घोलें।",
       "apply": "धूप निकलने पर हर 7 से 10 दिन में पत्तियों के पिछले हिस्से (निचली सतह) पर विशेष रूप से छिड़कें।",
       "prevent": "पॉलीहाउस या खेत में हवा का आवागमन बढ़ाएं ताकि नमी 80% से नीचे रहे। पत्तियों को सूखा रखना सबसे बड़ा बचाव है।"
     },
     "steps_en": {
-      "prep": "Dissolve 5 grams baking soda and 2 ml vegetable oil per liter of lukewarm water, or use Bacillus subtilis bio-fungicide.",
+      "prep": "Dilute 5 to 8 ml Bacillus subtilis liquid or 5g bio-fungicide powder per liter of fresh water.",
       "apply": "Spray thoroughly under leaf surfaces every 7 to 10 days in sunny weather.",
       "prevent": "Increase greenhouse or canopy aeration to keep humidity under 80%. Dry leaves naturally prevent mold spores from spreading."
     },
-    "audio_hi": "एग्रोदृष्टि निदान: आपके पौधे में लीफ मोल्ड यानी पत्ता फफूंद है। 5 ग्राम बेकिंग सोडा घोल पत्तों के पीछे छिड़कें और पौधों के बीच हवा का प्रवाह बढ़ाएं।",
-    "audio_en": "AgroDrishti diagnosis: Leaf Mold identified. Apply baking soda solution to the underside of foliage and maintain good air circulation."
+    "audio_hi": "एग्रोदृष्टि निदान: आपके पौधे में लीफ मोल्ड यानी पत्ता फफूंद है। बैसिलस सबटिलिस बायो-फंगिसाइड का घोल पत्तों के पीछे छिड़कें और पौधों के बीच हवा का प्रवाह बढ़ाएं।",
+    "audio_en": "AgroDrishti diagnosis: Leaf Mold identified. Apply Bacillus subtilis bio-fungicide to the underside of foliage and maintain good air circulation."
   },
   "Healthy": {
     "solution": "Aapki tamatar ki fasal bilkul swasth hai! (Crop is Healthy). Paudhe ki poshan kshamta banaye rakhne ke liye Jeevamrut ya Panchagavya tonic dein.",
@@ -132,26 +132,26 @@
     "audio_en": "AgroDrishti diagnosis: Late Blight detected. Spray 2.5 grams Copper Oxychloride or Pseudomonas solution every 5 to 7 days, and improve field air circulation."
   },
   "Tomato_Leaf_Mold": {
-    "solution": "Baking soda solution (बेकिंग सोडा) ya Bacillus subtilis bio-agent spray karein. Yeh patte ke pichhle hisse me safed-bhoore fafund ko control karta hai.",
-    "dosage": "5 gram Baking Soda + 2 ml refined/vegetable oil prati litre paani.",
-    "frequency": "Harr 7 se 10 din mein dhoop nikalne par patto ke dono taraf achhi tarah spray karein.",
+    "solution": "Bacillus subtilis bio-fungicide (बैसिलस सबटिलिस) ya Trichoderma viride ka ghol chhidkein. Yeh biological agent patte ke pichhle hisse me fafund ko natural tarike se khatam karta hai.",
+    "dosage": "5 se 8 ml Bacillus subtilis liquid (ya 5 gram bio-fungicide powder) prati litre paani.",
+    "frequency": "Harr 7 se 10 din mein subah ya dhoop nikalne par patto ke pichhle hisse par achhi tarah spray karein.",
     "seasonal_tip": "Greenhouse ya khet mein ventilation (hawa) badhayein taaki nami 80% se kam rahe. Patte sukhe rehne se fungus nahi papti.",
     "name_hi": "टमाटर लीफ मोल्ड / पत्ता फफूंद (Leaf Mold)",
     "name_en": "Tomato Leaf Mold",
     "status_hi": "⚠️ रोग ग्रस्त (पत्ता फफूंद)",
     "status_en": "⚠️ Infected (Leaf Mold)",
     "steps_hi": {
-      "prep": "5 ग्राम बेकिंग सोडा और 2 मिली वनस्पति तेल प्रति लीटर हल्के गुनगुने पानी में घोलें, या बैसिलस सबटिलिस बायो-कंट्रोल का उपयोग करें।",
+      "prep": "5 से 8 मिली बैसिलस सबटिलिस (Bacillus subtilis) या 5 ग्राम ट्राइकोडर्मा विरिडी बायो-फंगिसाइड प्रति लीटर ताजे पानी में अच्छी तरह घोलें।",
       "apply": "धूप निकलने पर हर 7 से 10 दिन में पत्तियों के पिछले हिस्से (निचली सतह) पर विशेष रूप से छिड़कें।",
       "prevent": "पॉलीहाउस या खेत में हवा का आवागमन बढ़ाएं ताकि नमी 80% से नीचे रहे। पत्तियों को सूखा रखना सबसे बड़ा बचाव है।"
     },
     "steps_en": {
-      "prep": "Dissolve 5 grams baking soda and 2 ml vegetable oil per liter of lukewarm water, or use Bacillus subtilis bio-fungicide.",
+      "prep": "Dilute 5 to 8 ml Bacillus subtilis liquid or 5g bio-fungicide powder per liter of fresh water.",
       "apply": "Spray thoroughly under leaf surfaces every 7 to 10 days in sunny weather.",
       "prevent": "Increase greenhouse or canopy aeration to keep humidity under 80%. Dry leaves naturally prevent mold spores from spreading."
     },
-    "audio_hi": "एग्रोदृष्टि निदान: आपके पौधे में लीफ मोल्ड यानी पत्ता फफूंद है। 5 ग्राम बेकिंग सोडा घोल पत्तों के पीछे छिड़कें और पौधों के बीच हवा का प्रवाह बढ़ाएं।",
-    "audio_en": "AgroDrishti diagnosis: Leaf Mold identified. Apply baking soda solution to the underside of foliage and maintain good air circulation."
+    "audio_hi": "एग्रोदृष्टि निदान: आपके पौधे में लीफ मोल्ड यानी पत्ता फफूंद है। बैसिलस सबटिलिस बायो-फंगिसाइड का घोल पत्तों के पीछे छिड़कें और पौधों के बीच हवा का प्रवाह बढ़ाएं।",
+    "audio_en": "AgroDrishti diagnosis: Leaf Mold identified. Apply Bacillus subtilis bio-fungicide to the underside of foliage and maintain good air circulation."
   },
   "Tomato_healthy": {
     "solution": "Aapki tamatar ki fasal bilkul swasth hai! (Crop is Healthy). Paudhe ki poshan kshamta banaye rakhne ke liye Jeevamrut ya Panchagavya tonic dein.",

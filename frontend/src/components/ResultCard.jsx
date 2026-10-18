@@ -30,15 +30,15 @@ export default function ResultCard({ result, language }) {
 
   // Confidence percentage
   const confPercent = confidence <= 1 ? Math.round(confidence * 100) : Math.round(confidence);
-  const isUncertain = disease === 'uncertain' || confPercent < 70;
+  const isUncertain = disease === 'uncertain' || confPercent < 85;
 
-  // Confidence progress bar color: Green >90%, Orange 70-90%, Red <70%
+  // Confidence progress bar color: Green >=90%, Amber 85-89%, Rose <85%
   let progressBarColor = 'bg-emerald-600 dark:bg-emerald-500';
   let progressTextColor = 'text-emerald-700 dark:text-emerald-400';
   if (confPercent >= 90) {
     progressBarColor = 'bg-emerald-600 dark:bg-emerald-500';
     progressTextColor = 'text-emerald-700 dark:text-emerald-400';
-  } else if (confPercent >= 70) {
+  } else if (confPercent >= 85) {
     progressBarColor = 'bg-amber-500 dark:bg-amber-400';
     progressTextColor = 'text-amber-700 dark:text-amber-400';
   } else {
@@ -55,8 +55,8 @@ export default function ResultCard({ result, language }) {
 
   if (isUncertain) {
     severityBadge = {
-      label: 'Uncertain (<70%)',
-      labelHi: '⚠️ अनिश्चित (<70%)',
+      label: 'Uncertain (<85%)',
+      labelHi: '⚠️ अनिश्चित (<85%)',
       classes: 'bg-amber-100/90 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700',
     };
   } else if (is_healthy) {

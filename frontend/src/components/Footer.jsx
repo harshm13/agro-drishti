@@ -24,7 +24,7 @@ export default function Footer({ language }) {
 
         <div className="flex items-center justify-center gap-4 pt-1 text-gray-400 dark:text-gray-500">
           <a
-            href="https://github.com"
+            href="https://github.com/harshm13/agro-drishti"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1 hover:text-primary dark:hover:text-emerald-400 transition-colors font-semibold"
