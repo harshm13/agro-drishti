@@ -1,0 +1,22 @@
+# Crop Doctor: Dependencies
+# Recommended Python Version: Python 3.9, 3.10, or 3.11 (for optimal TensorFlow compatibility)
+
+# Deep Learning Framework
+tensorflow>=2.12.0
+
+# Web Application Framework
+streamlit>=1.28.0
+
+# Image Processing & Utilities
+pillow>=9.5.0
+
+# Scientific Computing & Numerical Operations
+numpy>=1.23.0
+pandas>=2.0.0
+
+# Visualization & Plotting (Optional for training curves)
+matplotlib>=3.7.0
+
+# Voice Output (Text-to-Speech)
+gTTS>=2.5.0
+
