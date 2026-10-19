@@ -32,11 +32,19 @@ export default function StatsBar({ stats, language }) {
     {
       id: 'model',
       label: isHi ? 'मॉडल स्थिति' : 'Model Status',
-      value: stats.isModelLoaded ? 'CNN 150px' : 'Mock AI',
-      subtext: stats.isModelLoaded ? 'Ready' : 'Demo Active',
-      icon: <Cpu className="w-5 h-5 text-primary dark:text-emerald-400" />,
-      iconBg: 'bg-emerald-100/70 dark:bg-emerald-950/70 border-emerald-200/60 dark:border-emerald-800/60',
-      badge: 'Active',
+      value: stats.isModelLoaded ? 'CNN 150px' : (isHi ? 'ऑफलाइन' : 'Offline'),
+      subtext: stats.isModelLoaded
+        ? (isHi ? 'सक्रिय एवं तैयार' : 'Model Ready')
+        : (isHi ? 'सर्वर चालू करें' : 'python app.py'),
+      icon: <Cpu className={`w-5 h-5 ${stats.isModelLoaded ? 'text-primary dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`} />,
+      iconBg: stats.isModelLoaded
+        ? 'bg-emerald-100/70 dark:bg-emerald-950/70 border-emerald-200/60 dark:border-emerald-800/60'
+        : 'bg-rose-100/70 dark:bg-rose-950/70 border-rose-200/60 dark:border-rose-800/60',
+      badge: stats.isModelLoaded ? 'Active' : 'Offline',
+      badgeClass: stats.isModelLoaded
+        ? 'text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700'
+        : 'text-rose-800 dark:text-rose-300 bg-rose-100/90 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700',
+      pulseClass: stats.isModelLoaded ? 'bg-emerald-600 dark:bg-emerald-400 animate-pulse' : 'bg-rose-600 dark:bg-rose-400',
     },
   ];
 
@@ -52,8 +60,17 @@ export default function StatsBar({ stats, language }) {
               {card.icon}
             </div>
             {card.badge && (
-              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
+              <span
+                className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
+                  card.badgeClass ||
+                  'text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700'
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    card.pulseClass || 'bg-emerald-600 dark:bg-emerald-400 animate-pulse'
+                  }`}
+                />
                 {card.badge}
               </span>
             )}

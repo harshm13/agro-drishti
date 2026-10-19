@@ -4,7 +4,7 @@ import StatsBar from './components/StatsBar';
 import UploadSection from './components/UploadSection';
 import ResultCard from './components/ResultCard';
 import Footer from './components/Footer';
-import { predictDisease, predictDiseaseReal, predictDiseaseMock, checkBackendHealth } from './utils/api';
+import { predictDisease, checkBackendHealth } from './utils/api';
 import { History } from 'lucide-react';
 
 export default function App() {
@@ -42,7 +42,7 @@ export default function App() {
   // Language State: 'hi' (Hindi) or 'en' (English)
   const [language, setLanguage] = useState('hi');
 
-  // Core App States as required
+  // Core App States
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -69,9 +69,8 @@ export default function App() {
     },
   ]);
 
-  // API Mode toggle: 'real' (default, Flask API at :5000) or 'mock' (fallback/testing)
-  const [apiMode, setApiMode] = useState('real');
-  const [isModelLoaded, setIsModelLoaded] = useState(true);
+  // Backend connection status
+  const [isModelLoaded, setIsModelLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Periodically check Flask backend health
@@ -84,7 +83,7 @@ export default function App() {
       }
     };
     verifyHealth();
-    const timer = setInterval(verifyHealth, 8000);
+    const timer = setInterval(verifyHealth, 4000);
     return () => {
       isMounted = false;
       clearInterval(timer);
@@ -127,8 +126,8 @@ export default function App() {
     setErrorMessage(null);
 
     try {
-      // Force real mode — temporary fix
-      const result = await predictDisease(selectedImage); // ← ye throw karega agar backend down
+      // Real Flask API call (http://localhost:5000/predict)
+      const result = await predictDisease(selectedImage);
 
       setPredictionResult(result);
       setScanCount((prev) => prev + 1);
@@ -146,8 +145,12 @@ export default function App() {
 
     } catch (err) {
       console.error('Analyze error:', err);
-      setPredictionResult(null); // purana result bhi hata do
-      setErrorMessage(`Backend se result nahi aaya: ${err.message}. Kya Flask server (python app.py, port 5000) chal raha hai?`);
+      setPredictionResult(null); // Purana result hata do taaki koi fake diagnosis na dikhe
+      setErrorMessage(
+        isHi
+          ? `बैकएंड सर्वर से संपर्क नहीं हो पाया: ${err.message}। कृपया सुनिश्चित करें कि टर्मिनल में 'python app.py' (पोर्ट 5000) चल रहा है।`
+          : `Failed to connect to backend server: ${err.message}. Please verify Flask server ('python app.py') is running on port 5000.`
+      );
     } finally {
       setIsAnalyzing(false);
     }
@@ -155,12 +158,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#121212] font-sans antialiased text-[#212121] dark:text-[#E0E0E0] transition-colors duration-200">
-      {/* 1. Header with Gradient background, branding, Language toggle & Dark mode switch */}
+      {/* 1. Header with Live Backend Connection Status, Language toggle & Dark mode switch */}
       <Header
         language={language}
         setLanguage={setLanguage}
-        apiMode={apiMode}
-        setApiMode={setApiMode}
+        isModelLoaded={isModelLoaded}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
       />

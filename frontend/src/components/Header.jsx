@@ -6,8 +6,7 @@ import ThemeToggle from './ThemeToggle';
 export default function Header({
   language,
   setLanguage,
-  apiMode,
-  setApiMode,
+  isModelLoaded,
   isDarkMode,
   setIsDarkMode,
 }) {
@@ -43,25 +42,32 @@ export default function Header({
             </div>
           </div>
 
-          {/* Right Section: API Mode Badge, Language Switcher & Dark Mode Toggle */}
+          {/* Right Section: Backend Status Badge, Language Switcher & Dark Mode Toggle */}
           <div className="flex items-center gap-3 flex-wrap justify-center">
-            {/* Toggle between Mock API and Real Flask API with Pill Style */}
-            <button
-              onClick={() => setApiMode((prev) => (prev === 'mock' ? 'real' : 'mock'))}
+            {/* Real-time Backend Connection Status Badge */}
+            <div
               title={
-                apiMode === 'mock'
-                  ? 'Click to switch to Real Flask API (http://localhost:5000)'
-                  : 'Click to switch to Mock Demo mode'
+                isModelLoaded
+                  ? 'Flask backend server is running and ready on port 5000'
+                  : 'Flask backend server is currently offline. Start with: python app.py'
               }
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg active:scale-95 border ${
-                apiMode === 'mock'
-                  ? 'bg-amber-400 dark:bg-amber-500 text-stone-900 border-amber-300 dark:border-amber-400 hover:bg-amber-300'
-                  : 'bg-emerald-900/90 dark:bg-[#1A331D] text-white border-emerald-400/60 dark:border-emerald-700/60 hover:bg-emerald-950'
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border shadow-sm ${
+                isModelLoaded
+                  ? 'bg-emerald-900/90 dark:bg-[#1A331D] text-white border-emerald-400/60'
+                  : 'bg-rose-900/90 dark:bg-rose-950 text-rose-100 border-rose-500/60'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{apiMode === 'mock' ? 'Mock Engine' : 'Flask API (5000)'}</span>
-            </button>
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isModelLoaded ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                }`}
+              />
+              <span>
+                {isModelLoaded
+                  ? (isHi ? 'सर्वर चालू (पोर्ट 5000)' : 'Flask API (5000) Live')
+                  : (isHi ? 'सर्वर बंद (Offline)' : 'Backend Offline')}
+              </span>
+            </div>
 
             {/* Language Toggle Component */}
             <LanguageToggle language={language} setLanguage={setLanguage} />
