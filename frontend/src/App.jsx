@@ -123,40 +123,32 @@ export default function App() {
   // Primary Analyze Action: sends selected image to Flask backend
   const handleAnalyze = async () => {
     if (!selectedImage) return;
-
-    // 1. Set isAnalyzing = true (triggers loading spinner)
     setIsAnalyzing(true);
     setErrorMessage(null);
 
     try {
-      // 2. Call real Flask API in real mode, or mock ONLY in explicit demo mode
-      const result = apiMode === 'real'
-        ? await predictDisease(selectedImage)
-        : await predictDiseaseMock(selectedImage);
+      // Force real mode — temporary fix
+      const result = await predictDisease(selectedImage); // ← ye throw karega agar backend down
 
-      if (result) {
-        // 3. On success: update predictionResult, increment scanCount, add to recentScans
-        setPredictionResult(result);
-        setScanCount((prev) => prev + 1);
+      setPredictionResult(result);
+      setScanCount((prev) => prev + 1);
 
-        const isUncertain = result.disease === 'uncertain';
-        const newScanEntry = {
-          disease: result.disease,
-          name_hi: isUncertain ? 'अनिश्चित (कम स्पष्ट)' : (result.solution?.name_hi || result.disease),
-          name_en: isUncertain ? 'Uncertain (Low Confidence)' : (result.solution?.name_en || result.disease.replace(/_/g, ' ')),
-          confidence: result.confidence,
-          is_healthy: result.is_healthy,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
+      const isUncertain = result.disease === 'uncertain';
+      const newScanEntry = {
+        disease: result.disease,
+        name_hi: isUncertain ? 'अनिश्चित' : (result.solution?.name_hi || result.disease),
+        name_en: isUncertain ? 'Uncertain' : (result.solution?.name_en || result.disease.replace(/_/g, ' ')),
+        confidence: result.confidence,
+        is_healthy: result.is_healthy,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setRecentScans((prev) => [newScanEntry, ...prev.slice(0, 4)]);
 
-        setRecentScans((prev) => [newScanEntry, ...prev.slice(0, 4)]);
-      }
     } catch (err) {
       console.error('Analyze error:', err);
-      setPredictionResult(null);
-      setErrorMessage(`Backend se result nahi aaya: ${err.message}. Kya Flask server chal raha hai?`);
+      setPredictionResult(null); // purana result bhi hata do
+      setErrorMessage(`Backend se result nahi aaya: ${err.message}. Kya Flask server (python app.py, port 5000) chal raha hai?`);
     } finally {
-      // 4. Set isAnalyzing = false
       setIsAnalyzing(false);
     }
   };
