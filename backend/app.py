@@ -43,7 +43,7 @@ def predict():
         
         # Resize kar (150x150 for CNN input)
         image = image.resize((150, 150))
-        image_array = np.array(image, dtype=np.float32) / 255.0
+        image_array = np.array(image, dtype=np.float32) / 127.5 - 1.0        
         image_array = np.expand_dims(image_array, axis=0)
         
         # Predict kar
