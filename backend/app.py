@@ -28,8 +28,8 @@ solutions_path = os.path.join(base_dir, 'solutions', 'bio_solutions.json')
 with open(solutions_path, 'r', encoding='utf-8') as f:
     bio_solutions = json.load(f)
 
-# Class names (dataset ke folder names)
-class_names = ['Tomato_Early_Blight', 'Tomato_Late_Blight', 'Tomato_Leaf_Mold', 'Tomato_healthy']
+# Class names matching trained model output nodes (from model/classes.json)
+class_names = ['Potato___Early_blight', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___healthy']
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -43,7 +43,8 @@ def predict():
         
         # Resize kar (150x150 for CNN input)
         image = image.resize((150, 150))
-        image_array = np.array(image, dtype=np.float32) / 127.5 - 1.0        
+        # Custom CNN model expects [0.0, 1.0] normalized float32 tensor
+        image_array = np.array(image, dtype=np.float32) / 255.0
         image_array = np.expand_dims(image_array, axis=0)
         
         # Predict kar
@@ -62,6 +63,7 @@ def predict():
         
         top_idx = int(top_indices[0])
         top_confidence = float(probs[top_idx] * 100)
+        matched_class = class_names[top_idx]
         
         # Confidence threshold check (85%)
         if top_confidence < 85.0:
@@ -74,11 +76,18 @@ def predict():
                 'solution': {}
             }
         else:
+            # Look up solution with key normalization (supports Potato___Early_blight, Tomato_Early_Blight, etc.)
+            solution_data = (
+                bio_solutions.get(matched_class)
+                or bio_solutions.get(matched_class.replace('___', '_'))
+                or bio_solutions.get(matched_class.replace('___', ' ').replace('_', ' '))
+                or {}
+            )
             result = {
-                'disease': class_names[top_idx],
+                'disease': matched_class,
                 'confidence': float(round(top_confidence, 2)),
-                'solution': bio_solutions.get(class_names[top_idx], {}),
-                'is_healthy': class_names[top_idx] == 'Tomato_healthy',
+                'solution': solution_data,
+                'is_healthy': 'healthy' in matched_class.lower(),
                 'top_predictions': top_predictions
             }
         
