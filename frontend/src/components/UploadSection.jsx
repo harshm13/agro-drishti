@@ -99,7 +99,20 @@ export default function UploadSection({
     setCameraActive(false);
   };
 
-  const handleSelectSample = (sample) => {
+  const handleSelectSample = async (sample) => {
+    try {
+      const response = await fetch(`/samples/${sample.key}.jpg`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const file = new File([blob], `sample_${sample.key}.jpg`, { type: 'image/jpeg' });
+        onImageSelected(file);
+        return;
+      }
+    } catch (e) {
+      console.warn('Sample image fetch failed, using fallback canvas:', e);
+    }
+
+    // Fallback canvas in case static asset cannot be reached
     const canvas = document.createElement('canvas');
     canvas.width = 150;
     canvas.height = 150;
@@ -121,10 +134,6 @@ export default function UploadSection({
     }
     ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, 150, 150);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText(sample.key.replace('_', ' '), 15, 75);
 
     canvas.toBlob((blob) => {
       if (blob) {
