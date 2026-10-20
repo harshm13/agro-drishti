@@ -131,6 +131,50 @@
     "audio_hi": "बधाई हो! आपकी टमाटर की फसल बिल्कुल स्वस्थ है। एग्रोदृष्टि सलाह: पौधे की रोग प्रतिरोधक क्षमता बनाए रखने के लिए जीवामृत या पंचगव्य का नियमित पोषण देते रहें।",
     "audio_en": "Congratulations! Your tomato plant is completely healthy. AgroDrishti advice: Continue maintenance with organic bio-tonics like Jeevamrut for optimal yield."
   },
+  "Tomato_Early_blight": {
+    "solution": "Neem oil spray (नीम का तेल) ya Trichoderma viride bio-fungicide ka upyog karein. Yeh Rog-janak fungus ko natural tarike se rokta hai.",
+    "dosage": "5 ml Neem Oil prati litre paani (1 ml liquid soap ke saath) YA 5 gram Trichoderma powder prati litre paani.",
+    "frequency": "Harr 7 se 10 din mein ek baar chhidkaav karein (Spray every 7-10 days, subah ya shaam ke waqt).",
+    "seasonal_tip": "Neeche ke sukhe aur peele patte tod kar khet se door phenkein. Paani dete waqt patto par chheenate na padne dein.",
+    "name_hi": "टमाटर अगेती झुलसा (Early Blight)",
+    "name_en": "Tomato Early Blight",
+    "status_hi": "⚠️ रोग ग्रस्त (अगेती झुलसा)",
+    "status_en": "⚠️ Infected (Early Blight)",
+    "steps_hi": {
+      "prep": "नीम का तेल 5 मिली प्रति लीटर पानी (1 मिली लिक्विड सोप मिलाकर) या 5 ग्राम ट्राइकोडर्मा विरिडी पाउडर प्रति लीटर पानी में अच्छी तरह घोलें।",
+      "apply": "हर 7 से 10 दिनों में सुबह की पहली धूप या शाम को पत्तों के ऊपर व नीचे समान रूप से छिड़काव करें।",
+      "prevent": "निचले पीले और सूखे पत्तों को तुरंत काटकर खेत से दूर नष्ट करें। ड्रिप से सिंचाई करें ताकि पत्तों पर पानी न ठहरे।"
+    },
+    "steps_en": {
+      "prep": "Mix 5 ml pure Neem Oil per liter of water with 1 ml mild soap emulsifier, OR dissolve 5g Trichoderma viride powder per liter.",
+      "apply": "Spray thoroughly on both upper and lower leaf surfaces every 7-10 days during early morning or late evening.",
+      "prevent": "Prune affected lower foliage and discard safely away from crops. Use drip irrigation to prevent water splashing on leaves."
+    },
+    "audio_hi": "एग्रोदृष्टि निदान: आपके टमाटर के पौधे में अगेती झुलसा रोग पाया गया है। उपचार के लिए पांच मिलीलीटर नीम तेल प्रति लीटर पानी में मिलाकर हर 7 से 10 दिन में छिड़कें। रोगग्रस्त निचले पत्ते हटा दें।",
+    "audio_en": "AgroDrishti diagnosis: Your tomato plant is diagnosed with Early Blight. Apply 5 ml Neem oil per liter of water every 7 to 10 days. Prune affected bottom leaves and keep foliage dry."
+  },
+  "Tomato_Late_blight": {
+    "solution": "Copper Oxychloride (कॉपर ऑक्सीक्लोराइड) ya Pseudomonas fluorescens bio-fungicide ka ghol chhidkein. Thand aur nami mein yeh rog tezi se failta hai.",
+    "dosage": "2.5 se 3 gram Copper Oxychloride prati litre paani YA 10 ml Pseudomonas liquid prati litre paani.",
+    "frequency": "Harr 5 se 7 din mein lagataar chhidkaav karein jab tak naye patte swasth na aane lagein.",
+    "seasonal_tip": "Kohre aur barsaat ke mausam mein paudho ke beech hawa aane dein. Jyada sankramit paudho ko turant khet se ukhaad kar jala dein.",
+    "name_hi": "टमाटर पछेती झुलसा (Late Blight)",
+    "name_en": "Tomato Late Blight",
+    "status_hi": "⚠️ गंभीर रोग ग्रस्त (पछेती झुलसा)",
+    "status_en": "⚠️ Severely Infected (Late Blight)",
+    "steps_hi": {
+      "prep": "2.5 से 3 ग्राम कॉपर ऑक्सीक्लोराइड (Copper Oxychloride) या 10 मिली स्यूडोमोनास फ्लोरोसेंस बायो-फंगिसाइड प्रति लीटर पानी में घोलें।",
+      "apply": "हर 5 से 7 दिन में लगातार 2 से 3 बार पत्तियों और तने पर गहरा छिड़काव करें।",
+      "prevent": "बरसात या कोहरे के समय पौधों के बीच हवा का संचार रखें। गंभीर रूप से बीमार पौधों को उखाड़कर नष्ट करें।"
+    },
+    "steps_en": {
+      "prep": "Dissolve 2.5 to 3 grams of Copper Oxychloride or 10 ml Pseudomonas fluorescens bio-agent per liter of water.",
+      "apply": "Spray generously over canopy and stems every 5-7 days until new healthy growth emerges.",
+      "prevent": "Ensure adequate field spacing for airflow during foggy, humid weather. Uproot and burn irreversibly damaged plants."
+    },
+    "audio_hi": "एग्रोदृष्टि निदान: आपके टमाटर के पौधे में पछेती झुलसा यानी लेट ब्लाइट के लक्षण हैं। ढाई ग्राम कॉपर ऑक्सीक्लोराइड या स्यूडोमोनास का घोल बनाकर हर 5 से 7 दिन में छिड़काव करें।",
+    "audio_en": "AgroDrishti diagnosis: Late Blight detected. Spray 2.5 grams Copper Oxychloride or Pseudomonas solution every 5 to 7 days, and improve field air circulation."
+  },
   "Tomato_Early_Blight": {
     "solution": "Neem oil spray (नीम का तेल) ya Trichoderma viride bio-fungicide ka upyog karein. Yeh Rog-janak fungus ko natural tarike se rokta hai.",
     "dosage": "5 ml Neem Oil prati litre paani (1 ml liquid soap ke saath) YA 5 gram Trichoderma powder prati litre paani.",
