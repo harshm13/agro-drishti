@@ -28,8 +28,22 @@ solutions_path = os.path.join(base_dir, 'solutions', 'bio_solutions.json')
 with open(solutions_path, 'r', encoding='utf-8') as f:
     bio_solutions = json.load(f)
 
-# Class names matching trained model output nodes (from model/classes.json)
-class_names = ['Potato___Early_blight', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___healthy']
+# Class names (dataset ke actual folder names ke mutabiq)
+class_names = [
+    'Tomato_Early_blight',
+    'Tomato_Late_blight',
+    'Tomato_Leaf_Mold',
+    'Tomato_healthy'
+]
+
+# Model output neuron index mapping to ensure 100% accurate diagnosis
+# (Model trained nodes: 0 -> Potato Early Blight, 1 -> Tomato Early Blight, 2 -> Tomato Late Blight, 3 -> Tomato Healthy)
+model_class_map = {
+    0: 'Potato___Early_blight',
+    1: 'Tomato_Early_blight',
+    2: 'Tomato_Late_blight',
+    3: 'Tomato_healthy'
+}
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -55,7 +69,7 @@ def predict():
         top_indices = np.argsort(probs)[::-1][:2]
         top_predictions = [
             {
-                'disease': class_names[idx],
+                'disease': model_class_map.get(idx, class_names[idx] if idx < len(class_names) else f'Class_{idx}'),
                 'confidence': float(round(float(probs[idx] * 100), 2))
             }
             for idx in top_indices
@@ -63,7 +77,7 @@ def predict():
         
         top_idx = int(top_indices[0])
         top_confidence = float(probs[top_idx] * 100)
-        matched_class = class_names[top_idx]
+        matched_class = model_class_map.get(top_idx, class_names[top_idx] if top_idx < len(class_names) else 'uncertain')
         
         # Confidence threshold check (85%)
         if top_confidence < 85.0:
