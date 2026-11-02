@@ -1,86 +1,109 @@
 import React from 'react';
-import { Leaf, Sparkles } from 'lucide-react';
+import { Leaf, Sun, Moon, Sparkles, Activity } from 'lucide-react';
 import LanguageToggle from './LanguageToggle';
-import ThemeToggle from './ThemeToggle';
 
-export default function Header({
-  language,
-  setLanguage,
-  isModelLoaded,
+const Header = ({
   isDarkMode,
   setIsDarkMode,
-}) {
-  const isHi = language === 'hi';
-
+  language,
+  setLanguage,
+  backendOnline,
+  useMockMode,
+  setUseMockMode,
+}) => {
   return (
-    <header className="relative overflow-hidden bg-gradient-to-r from-[#2E7D32] via-[#388E3C] to-[#81C784] dark:from-[#113314] dark:via-[#1a441d] dark:to-[#153417] text-white shadow-md dark:border-b dark:border-[#333333] transition-colors duration-200">
-      {/* Subtle organic light reflections */}
-      <div className="absolute -top-12 -right-12 w-56 h-56 bg-white/10 dark:bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-10 -left-10 w-44 h-44 bg-emerald-950/20 dark:bg-black/30 rounded-full blur-xl pointer-events-none" />
+    <header className="relative w-full bg-gradient-to-r from-primary-700 via-primary-600 to-primary-500 text-white shadow-xl overflow-hidden">
+      {/* Ambient background bio-glow */}
+      <div className="absolute -top-24 -right-24 w-72 h-72 bg-secondary/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-accent/20 rounded-full blur-2xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Logo & Branding */}
-          <div className="flex items-center gap-3.5 text-center sm:text-left">
-            <div className="w-13 h-13 p-2.5 rounded-2xl bg-white/20 dark:bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30 dark:border-white/20 transform hover:scale-105 transition-all">
-              <Leaf className="w-8 h-8 text-white drop-shadow-sm" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          
+          {/* Logo & Title */}
+          <div className="flex items-center gap-3.5 text-center md:text-left">
+            <div className="relative p-2.5 bg-white/15 dark:bg-black/20 rounded-2xl backdrop-blur-md border border-white/25 shadow-inner">
+              <Leaf className="w-8 h-8 text-secondary-light drop-shadow-md animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-accent absolute top-1.5 right-1.5" />
             </div>
+
             <div>
-              <div className="flex items-center justify-center sm:justify-start gap-2.5">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white drop-shadow-sm font-sans">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-sm font-sans">
                   AgroDrishti
                 </h1>
-                <span className="text-xs bg-amber-400 dark:bg-amber-500 text-stone-900 font-extrabold px-2.5 py-0.5 rounded-full shadow-sm tracking-wide">
-                  {isHi ? 'एग्रोदृष्टि' : 'v1.0'}
+                <span className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-bold tracking-wide uppercase bg-white/20 text-white rounded-full border border-white/30 backdrop-blur-sm">
+                  v2.0 AI
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-medium text-emerald-100 dark:text-emerald-200/90 tracking-wide mt-0.5">
-                {isHi
-                  ? 'AI-संचालित फसल रोग पहचान एवं 100% प्राकृतिक जैविक समाधान'
-                  : 'AI-Powered Crop Disease Detection with Biological Solutions'}
+              <p className="text-xs sm:text-sm font-medium text-emerald-100/90 mt-0.5">
+                {language === 'hi'
+                  ? 'Photo खींचो, बीमारी भगाओ • 100% जैविक उपचार'
+                  : 'AI-Powered Foliage Pathology & 100% Biological Treatment'}
               </p>
             </div>
           </div>
 
-          {/* Right Section: Backend Status Badge, Language Switcher & Dark Mode Toggle */}
-          <div className="flex items-center gap-3 flex-wrap justify-center">
-            {/* Real-time Backend Connection Status Badge */}
-            <div
+          {/* Action Controls: Live Status, Mock Toggle, Dark Mode, Language */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            {/* Backend Connectivity Status Badge */}
+            <button
+              type="button"
+              onClick={() => setUseMockMode(!useMockMode)}
               title={
-                isModelLoaded
-                  ? 'Flask backend server is running and ready on port 5000'
-                  : 'Flask backend server is currently offline. Start with: python app.py'
+                useMockMode
+                  ? 'Currently using Mock AI. Click to try Real Flask Backend.'
+                  : backendOnline
+                  ? 'Connected to Live Flask CNN. Click to switch to Mock.'
+                  : 'Backend offline. Running on fallback simulator.'
               }
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border shadow-sm ${
-                isModelLoaded
-                  ? 'bg-emerald-900/90 dark:bg-[#1A331D] text-white border-emerald-400/60'
-                  : 'bg-rose-900/90 dark:bg-rose-950 text-rose-100 border-rose-500/60'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md transition-all shadow-sm ${
+                !useMockMode && backendOnline
+                  ? 'bg-emerald-950/60 border-emerald-400/50 text-emerald-300'
+                  : 'bg-amber-950/60 border-amber-400/50 text-amber-300'
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  isModelLoaded ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                  !useMockMode && backendOnline
+                    ? 'bg-emerald-400 animate-ping'
+                    : 'bg-amber-400 animate-pulse'
                 }`}
               />
+              <Activity className="w-3.5 h-3.5 ml-0.5" />
               <span>
-                {isModelLoaded
-                  ? (isHi ? 'सर्वर चालू (पोर्ट 5000)' : 'Flask API (5000) Live')
-                  : (isHi ? 'सर्वर बंद (Offline)' : 'Backend Offline')}
+                {!useMockMode && backendOnline
+                  ? language === 'hi' ? 'लाइव AI कनेक्टेड' : 'Live Flask CNN'
+                  : language === 'hi' ? 'सिम्युलेशन मोड' : 'Mock Mode'}
               </span>
-            </div>
+            </button>
 
-            {/* Language Toggle Component */}
+            {/* Dark / Light Mode Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-2 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/25 shadow-sm backdrop-blur-md transition-all duration-200"
+              title={isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? (
+                <Sun className="w-4 h-4 text-accent animate-spin-slow" />
+              ) : (
+                <Moon className="w-4 h-4 text-emerald-100" />
+              )}
+            </button>
+
+            {/* Language Selector */}
             <LanguageToggle language={language} setLanguage={setLanguage} />
-
-            {/* Dark Mode Theme Toggle Component */}
-            <ThemeToggle
-              isDarkMode={isDarkMode}
-              setIsDarkMode={setIsDarkMode}
-              language={language}
-            />
           </div>
+
         </div>
       </div>
+
+      {/* Decorative Bottom Wave/Border */}
+      <div className="w-full h-1 bg-gradient-to-r from-secondary-light via-accent to-secondary-dark opacity-60" />
     </header>
   );
-}
+};
+
+export default Header;

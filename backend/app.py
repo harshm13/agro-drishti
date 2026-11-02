@@ -6,38 +6,41 @@ from PIL import Image
 import io
 import json
 import os
+import re
 
 app = Flask(__name__)
-CORS(app)  # React frontend ko access karne ke liye
+# Enable CORS for Vite frontend (localhost:5173) and local network
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "*"]}})
 
-# Model load kar
+# Load CNN Model
 base_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(base_dir, 'models', 'crop_doctor.h5')
+model_path = os.path.join(base_dir, 'models', 'agro_drishti_model.h5')
 
-# Fallback path if crop_doctor.h5 is named agro_drishti_model.h5
+# Fallback path if agro_drishti_model.h5 is named crop_doctor.h5
 if not os.path.exists(model_path):
-    alt_model = os.path.join(base_dir, 'models', 'agro_drishti_model.h5')
+    alt_model = os.path.join(base_dir, 'models', 'crop_doctor.h5')
     if os.path.exists(alt_model):
         model_path = alt_model
 
-model = tf.keras.models.load_model(model_path)
-print(f"Model successfully loaded from: {model_path}")
+# compile=False avoids optimizer deserialization delays across TensorFlow versions
+model = tf.keras.models.load_model(model_path, compile=False)
+print(f"[*] AgroDrishti Model successfully loaded from: {model_path} (Output Shape: {model.output_shape})")
 
-# Bio-solutions load kar (UTF-8 encoding required for Hindi / multilingual content on Windows)
+# Load Bio-solutions with UTF-8 encoding (supporting Hindi / Devanagari scripts)
 solutions_path = os.path.join(base_dir, 'solutions', 'bio_solutions.json')
 with open(solutions_path, 'r', encoding='utf-8') as f:
     bio_solutions = json.load(f)
 
-# Class names (dataset ke actual folder names ke mutabiq)
-class_names = [
-    'Tomato_Early_blight',
-    'Tomato_Late_blight',
-    'Tomato_Leaf_Mold',
-    'Tomato_healthy'
-]
+# Build a normalized lookup table to guarantee 100% solution matching regardless of spacing/casing/underscores
+def normalize_key(k: str) -> str:
+    return re.sub(r'[\s_]+', '', k.lower())
 
-# Model output neuron index mapping to ensure 100% accurate diagnosis
-# (Model trained nodes: 0 -> Potato Early Blight, 1 -> Tomato Early Blight, 2 -> Tomato Late Blight, 3 -> Tomato Healthy)
+normalized_solutions = {}
+for k, v in bio_solutions.items():
+    normalized_solutions[normalize_key(k)] = v
+
+# Map model output neuron index to canonical disease identifiers
+# Trained nodes: 0 -> Potato Early Blight, 1 -> Tomato Early Blight, 2 -> Tomato Late Blight, 3 -> Tomato Healthy
 model_class_map = {
     0: 'Potato___Early_blight',
     1: 'Tomato_Early_blight',
@@ -45,64 +48,92 @@ model_class_map = {
     3: 'Tomato_healthy'
 }
 
-@app.route('/predict', methods=['POST'])
+def get_solution_for_disease(disease_name: str) -> dict:
+    """Finds matching solution by exact match or normalized key and enriches schema."""
+    sol = {}
+    if disease_name in bio_solutions:
+        sol = dict(bio_solutions[disease_name])
+    else:
+        norm = normalize_key(disease_name)
+        if norm in normalized_solutions:
+            sol = dict(normalized_solutions[norm])
+        else:
+            # Try fuzzy crop/condition matching
+            for k, v in bio_solutions.items():
+                if normalize_key(k) in norm or norm in normalize_key(k):
+                    sol = dict(v)
+                    break
+            
+            # Default healthy fallback if keyword healthy is present
+            if not sol and 'healthy' in norm:
+                sol = dict(normalized_solutions.get('healthy') or normalized_solutions.get('tomatohealthy', {}))
+        
+    if sol:
+        # Guarantee cross-compatibility between frontend schemas
+        if 'solution_hindi' not in sol:
+            sol['solution_hindi'] = sol.get('solution', '')
+        if 'solution_english' not in sol:
+            sol['solution_english'] = sol.get('name_en', '') + ': ' + sol.get('dosage', '')
+            
+    return sol
+
+@app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     try:
-        # Image receive kar
         if 'image' not in request.files:
             return jsonify({'error': 'No image file uploaded in request'}), 400
 
         file = request.files['image']
         image = Image.open(io.BytesIO(file.read())).convert('RGB')
         
-        # Resize kar (150x150 for CNN input)
+        # Resize to 150x150 for CNN input
         image = image.resize((150, 150))
-        # Custom CNN model expects [0.0, 1.0] normalized float32 tensor
+        # Custom CNN model expects normalized [0.0, 1.0] float32 tensor
         image_array = np.array(image, dtype=np.float32) / 255.0
         image_array = np.expand_dims(image_array, axis=0)
         
-        # Predict kar
-        predictions = model.predict(image_array)
+        # Run inference
+        predictions = model.predict(image_array, verbose=0)
         probs = predictions[0]
         
-        # Calculate top-2 predictions sorted descending
-        top_indices = np.argsort(probs)[::-1][:2]
+        # Calculate sorted top predictions
+        top_indices = np.argsort(probs)[::-1]
         top_predictions = [
             {
-                'disease': model_class_map.get(idx, class_names[idx] if idx < len(class_names) else f'Class_{idx}'),
+                'disease': model_class_map.get(idx, f'Class_{idx}'),
                 'confidence': float(round(float(probs[idx] * 100), 2))
             }
-            for idx in top_indices
+            for idx in top_indices[:3]
         ]
         
         top_idx = int(top_indices[0])
         top_confidence = float(probs[top_idx] * 100)
-        matched_class = model_class_map.get(top_idx, class_names[top_idx] if top_idx < len(class_names) else 'uncertain')
-        
-        # Confidence threshold check (85%)
-        if top_confidence < 85.0:
+        matched_class = model_class_map.get(top_idx, 'uncertain')
+        solution_data = get_solution_for_disease(matched_class)
+        is_healthy = 'healthy' in matched_class.lower()
+
+        # Handle very low confidence (< 45%) as truly uncertain
+        if top_confidence < 45.0:
             result = {
                 'disease': 'uncertain',
                 'confidence': float(round(top_confidence, 2)),
-                'message': 'Photo saaf nahi hai ya ye bimari model ke paas nahi hai. Kisi expert se check karein.',
+                'message': 'Photo saaf nahi hai ya ye bimari model ke paas nahi hai. Kripya achhi roshni me patti ki photo lein.',
+                'message_en': 'Image unclear or condition unknown to model. Please re-take photo in bright natural lighting.',
                 'top_predictions': top_predictions,
                 'is_healthy': False,
-                'solution': {}
+                'solution': solution_data
             }
         else:
-            # Look up solution with key normalization (supports Potato___Early_blight, Tomato_Early_Blight, etc.)
-            solution_data = (
-                bio_solutions.get(matched_class)
-                or bio_solutions.get(matched_class.replace('___', '_'))
-                or bio_solutions.get(matched_class.replace('___', ' ').replace('_', ' '))
-                or {}
-            )
             result = {
                 'disease': matched_class,
                 'confidence': float(round(top_confidence, 2)),
                 'solution': solution_data,
-                'is_healthy': 'healthy' in matched_class.lower(),
-                'top_predictions': top_predictions
+                'is_healthy': is_healthy,
+                'top_predictions': top_predictions,
+                'status': 'verified' if top_confidence >= 80.0 else 'moderate_confidence'
             }
         
         return jsonify(result)
@@ -111,9 +142,17 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/health', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'healthy', 'model': 'loaded'})
+    return jsonify({
+        'status': 'healthy',
+        'model': 'loaded',
+        'classes': list(model_class_map.values()),
+        'solution_records': len(bio_solutions),
+        'version': '2.0.0'
+    })
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, port=port, use_reloader=False)
+    print(f"[*] Starting AgroDrishti Backend on http://localhost:{port}")
+    app.run(host='0.0.0.0', debug=True, port=port, use_reloader=False)

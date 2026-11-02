@@ -1,93 +1,99 @@
 import React from 'react';
-import { Leaf, CheckCircle, AlertTriangle, Cpu } from 'lucide-react';
+import { Scan, ShieldCheck, AlertTriangle, Cpu } from 'lucide-react';
 
-export default function StatsBar({ stats, language }) {
-  const isHi = language === 'hi';
+const StatsBar = ({ scanCount, recentScans, language, backendOnline, useMockMode }) => {
+  // Calculate dynamic healthy % from recent scans if any exist
+  const healthyCount = recentScans.filter((s) => s.is_healthy).length;
+  const healthyPercentage =
+    recentScans.length > 0
+      ? Math.round((healthyCount / recentScans.length) * 100)
+      : 82;
 
-  const cards = [
+  const activeAlerts =
+    recentScans.length > 0
+      ? recentScans.filter((s) => !s.is_healthy).length
+      : 1;
+
+  const stats = [
     {
       id: 'scans',
-      label: isHi ? 'कुल स्कैन' : 'Total Scans',
-      value: stats.totalScans.toLocaleString(),
-      subtext: isHi ? '+12 आज' : '+12 today',
-      icon: <Leaf className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />,
-      iconBg: 'bg-emerald-100/70 dark:bg-emerald-950/70 border-emerald-200/60 dark:border-emerald-800/60',
+      label: language === 'hi' ? 'कुल स्कैन' : 'Total Scans',
+      value: scanCount.toLocaleString(),
+      subtext: language === 'hi' ? 'सक्रिय सत्र' : 'Live Session',
+      icon: Scan,
+      color: 'text-primary dark:text-secondary',
+      bgGlow: 'from-primary-500/10 to-transparent',
+      borderColor: 'border-green-200 dark:border-green-900/40',
     },
     {
       id: 'healthy',
-      label: isHi ? 'स्वस्थ फसल दर' : 'Healthy Rate',
-      value: `${stats.healthyRate.toFixed(1)}%`,
-      subtext: isHi ? 'औसत दर' : 'High Immunity',
-      icon: <CheckCircle className="w-5 h-5 text-green-700 dark:text-green-400" />,
-      iconBg: 'bg-green-100/70 dark:bg-green-950/70 border-green-200/60 dark:border-green-800/60',
+      label: language === 'hi' ? 'स्वस्थ फसल दर' : 'Healthy Crops',
+      value: `${healthyPercentage}%`,
+      subtext: language === 'hi' ? 'सामान्य दर' : 'Foliage Health',
+      icon: ShieldCheck,
+      color: 'text-emerald-600 dark:text-emerald-400',
+      bgGlow: 'from-emerald-500/10 to-transparent',
+      borderColor: 'border-emerald-200 dark:border-emerald-900/40',
     },
     {
       id: 'alerts',
-      label: isHi ? 'सक्रिय अलर्ट' : 'Active Alerts',
-      value: stats.activeAlerts,
-      subtext: isHi ? 'तत्काल ध्यान दें' : 'Requires Action',
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
-      iconBg: 'bg-amber-100/70 dark:bg-amber-950/70 border-amber-200/60 dark:border-amber-800/60',
+      label: language === 'hi' ? 'सक्रिय अलर्ट' : 'Active Alerts',
+      value: activeAlerts,
+      subtext: language === 'hi' ? 'झुलसा व फफूंद' : 'Blight & Mildew',
+      icon: AlertTriangle,
+      color: 'text-amber-500 dark:text-amber-400',
+      bgGlow: 'from-amber-500/10 to-transparent',
+      borderColor: 'border-amber-200 dark:border-amber-900/40',
     },
     {
-      id: 'model',
-      label: isHi ? 'मॉडल स्थिति' : 'Model Status',
-      value: stats.isModelLoaded ? 'CNN 150px' : (isHi ? 'ऑफलाइन' : 'Offline'),
-      subtext: stats.isModelLoaded
-        ? (isHi ? 'सक्रिय एवं तैयार' : 'Model Ready')
-        : (isHi ? 'सर्वर चालू करें' : 'python app.py'),
-      icon: <Cpu className={`w-5 h-5 ${stats.isModelLoaded ? 'text-primary dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`} />,
-      iconBg: stats.isModelLoaded
-        ? 'bg-emerald-100/70 dark:bg-emerald-950/70 border-emerald-200/60 dark:border-emerald-800/60'
-        : 'bg-rose-100/70 dark:bg-rose-950/70 border-rose-200/60 dark:border-rose-800/60',
-      badge: stats.isModelLoaded ? 'Active' : 'Offline',
-      badgeClass: stats.isModelLoaded
-        ? 'text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700'
-        : 'text-rose-800 dark:text-rose-300 bg-rose-100/90 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700',
-      pulseClass: stats.isModelLoaded ? 'bg-emerald-600 dark:bg-emerald-400 animate-pulse' : 'bg-rose-600 dark:bg-rose-400',
+      id: 'engine',
+      label: language === 'hi' ? 'AI मॉडल स्थिति' : 'Model Status',
+      value: !useMockMode && backendOnline ? 'CNN 150px' : 'Simulator',
+      subtext: !useMockMode && backendOnline
+        ? language === 'hi' ? 'सक्रिय एवं लोड' : 'TensorFlow Active'
+        : language === 'hi' ? 'डेमो मोड' : 'Standby / Demo',
+      icon: Cpu,
+      color: 'text-blue-600 dark:text-blue-400',
+      bgGlow: 'from-blue-500/10 to-transparent',
+      borderColor: 'border-blue-200 dark:border-blue-900/40',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 my-6">
-      {cards.map((card) => (
-        <div
-          key={card.id}
-          className="glass-card hover-lift p-4 flex flex-col items-start justify-between rounded-2xl transition-all shadow-md bg-white/80 dark:bg-[#1E1E1E] border border-white/50 dark:border-[#333333]"
-        >
-          <div className="flex items-center justify-between w-full mb-2">
-            <div className={`p-2.5 rounded-xl ${card.iconBg} border shadow-sm`}>
-              {card.icon}
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        {stats.map((stat) => {
+          const IconComponent = stat.icon;
+          return (
+            <div
+              key={stat.id}
+              className={`glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 border ${stat.borderColor} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
+            >
+              <div className={`absolute -right-6 -bottom-6 w-24 h-24 bg-gradient-to-br ${stat.bgGlow} rounded-full blur-xl pointer-events-none`} />
+
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {stat.label}
+                  </p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mt-1 tracking-tight">
+                    {stat.value}
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    {stat.subtext}
+                  </p>
+                </div>
+
+                <div className={`p-2 sm:p-2.5 rounded-xl bg-gray-100/80 dark:bg-dark-surface/80 ${stat.color} shadow-sm border border-gray-200/50 dark:border-gray-800`}>
+                  <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+              </div>
             </div>
-            {card.badge && (
-              <span
-                className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-                  card.badgeClass ||
-                  'text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    card.pulseClass || 'bg-emerald-600 dark:bg-emerald-400 animate-pulse'
-                  }`}
-                />
-                {card.badge}
-              </span>
-            )}
-          </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-extrabold text-gray-800 dark:text-[#E0E0E0] tracking-tight">
-              {card.value}
-            </div>
-            <div className="text-xs font-semibold text-gray-500 dark:text-[#B0B0B0] uppercase tracking-wide mt-0.5">
-              {card.label}
-            </div>
-            <div className="text-[11px] font-medium text-gray-400 dark:text-gray-400 mt-0.5">
-              {card.subtext}
-            </div>
-          </div>
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
-}
+};
+
+export default StatsBar;

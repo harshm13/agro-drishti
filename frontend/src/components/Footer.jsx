@@ -1,44 +1,64 @@
 import React from 'react';
-import { Leaf, Heart, ExternalLink } from 'lucide-react';
+import { Leaf, Heart, Github, Award, ExternalLink } from 'lucide-react';
 
-export default function Footer({ language }) {
-  const isHi = language === 'hi';
-
+const Footer = ({ language }) => {
   return (
-    <footer className="bg-white dark:bg-[#181818] border-t border-green-100/80 dark:border-[#333333] py-6 mt-12 text-center text-xs text-gray-500 dark:text-[#B0B0B0] transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 space-y-2">
-        <div className="font-extrabold text-sm text-primary dark:text-emerald-400 flex items-center justify-center gap-2">
-          <Leaf className="w-4 h-4 text-primary dark:text-emerald-400" />
-          <span>AgroDrishti (एग्रोदृष्टि)</span>
-          <span>•</span>
-          <span className="font-semibold text-gray-600 dark:text-[#B0B0B0]">
-            {isHi ? 'फोटो खींचो, बीमारी भगाओ' : 'AI-Powered Foliar Pathology'}
-          </span>
+    <footer className="w-full mt-16 border-t border-green-200/60 dark:border-dark-border bg-white/60 dark:bg-dark-card/60 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          
+          {/* Brand & Mission Statement */}
+          <div className="flex items-center gap-3 text-center md:text-left">
+            <div className="p-2 rounded-xl bg-primary-100 dark:bg-primary-950/60 text-primary dark:text-secondary">
+              <Leaf className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-gray-900 dark:text-white">
+                AgroDrishti • एग्रोदृष्टि
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {language === 'hi'
+                  ? 'भारतीय किसानों के लिए 100% जैविक व रासायनिक-मुक्त फसल समाधान'
+                  : '100% Biological & Organic Foliar Disease Treatment for Farmers'}
+              </p>
+            </div>
+          </div>
+
+          {/* Credits & Founders */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300">
+              <Award className="w-3.5 h-3.5 text-accent" />
+              <span>
+                {language === 'hi'
+                  ? 'निर्माता: हर्ष मेहता (IT) व राशी (बायोटेक)'
+                  : 'Created by Harsh Mehta (IT) & Rashi (Biotech)'}
+              </span>
+            </div>
+
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-primary dark:hover:text-secondary transition-colors"
+            >
+              <Github className="w-4 h-4" />
+              <span>GitHub</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
         </div>
 
-        <p className="text-gray-600 dark:text-[#B0B0B0] font-medium">
-          {isHi ? 'निर्माता' : 'Project by'}:{' '}
-          <span className="font-bold text-gray-800 dark:text-[#E0E0E0]">Harsh Mehta</span> (IT, Ahmedabad) &amp;{' '}
-          <span className="font-bold text-gray-800 dark:text-[#E0E0E0]">Rashi</span> (Biotech, Chhattisgarh)
-        </p>
-
-        <div className="flex items-center justify-center gap-4 pt-1 text-gray-400 dark:text-gray-500">
-          <a
-            href="https://github.com/harshm13/agro-drishti"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 hover:text-primary dark:hover:text-emerald-400 transition-colors font-semibold"
-          >
-            <span>GitHub Repository</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
-          <span>•</span>
-          <span className="flex items-center gap-1 text-primary dark:text-emerald-400 font-semibold">
-            <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
-            <span>Kisan Mitra Bio Initiative</span>
-          </span>
+        {/* Bottom copyright notice */}
+        <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border/40 text-center text-[11px] text-gray-400 dark:text-gray-500">
+          <p>
+            © {new Date().getFullYear()} AgroDrishti. {language === 'hi' ? 'सर्वाधिकार सुरक्षित।' : 'All rights reserved.'} • 
+            <span className="ml-1 text-primary dark:text-secondary">Photo खींचो, बीमारी भगाओ</span>
+          </p>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;
