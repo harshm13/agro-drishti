@@ -1,27 +1,160 @@
 import axios from 'axios';
 
-// Backend URL fallback
-const BACKEND_URL = 'http://localhost:5000';
+// Backend Base URL
+export const BACKEND_URL = 'http://localhost:5000';
+
+// In-memory CSRF Token Storage
+let inMemoryCsrfToken = null;
+
+export const setCsrfToken = (token) => {
+  inMemoryCsrfToken = token;
+};
+
+export const getCsrfToken = () => inMemoryCsrfToken;
+
+// Central Axios instance with credentials enabled for session cookies
+export const apiClient = axios.create({
+  baseURL: BACKEND_URL,
+  withCredentials: true,
+  timeout: 15000,
+});
+
+// Request interceptor to attach X-CSRF-Token on state-changing requests
+apiClient.interceptors.request.use(
+  (config) => {
+    const method = config.method ? config.method.toLowerCase() : '';
+    if (['post', 'put', 'delete', 'patch'].includes(method)) {
+      if (inMemoryCsrfToken) {
+        config.headers['X-CSRF-Token'] = inMemoryCsrfToken;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor to automatically capture csrf_token from responses
+apiClient.interceptors.response.use(
+  (response) => {
+    if (response.data && response.data.csrf_token) {
+      inMemoryCsrfToken = response.data.csrf_token;
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
 
 /**
  * Check if the Flask backend server is alive and responding.
  */
 export const checkBackendHealth = async () => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/health`, { timeout: 2500 });
+    const response = await apiClient.get('/health', { timeout: 2500 });
     return response.status === 200 && response.data?.status === 'healthy';
   } catch (error) {
     return false;
   }
 };
 
+/* ==========================================================================
+   AUTHENTICATION APIS
+   ========================================================================== */
+
 /**
- * High-fidelity Mock API simulation with realistic delay.
- * Includes complete bilingual 3-step treatments, dosage, frequency, and audio scripts.
+ * Retrieves the current logged-in user profile and initializes CSRF token.
+ */
+export const getCurrentUser = async () => {
+  try {
+    const response = await apiClient.get('/api/auth/me');
+    if (response.data?.csrf_token) {
+      setCsrfToken(response.data.csrf_token);
+    }
+    return response.data?.user || null;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+/**
+ * Authenticates user via email and password.
+ */
+export const loginUser = async (email, password) => {
+  const response = await apiClient.post('/api/auth/login', { email, password });
+  if (response.data?.csrf_token) {
+    setCsrfToken(response.data.csrf_token);
+  }
+  return response.data?.user;
+};
+
+/**
+ * Registers a new standard user account.
+ */
+export const registerUser = async (name, email, password) => {
+  const response = await apiClient.post('/api/auth/register', { name, email, password });
+  if (response.data?.csrf_token) {
+    setCsrfToken(response.data.csrf_token);
+  }
+  return response.data?.user;
+};
+
+/**
+ * Logs out the current user and clears session.
+ */
+export const logoutUser = async () => {
+  try {
+    await apiClient.post('/api/auth/logout');
+  } finally {
+    setCsrfToken(null);
+  }
+};
+
+/* ==========================================================================
+   SCAN HISTORY APIS (Logged-in User)
+   ========================================================================== */
+
+/**
+ * Fetches the logged-in user's scan history.
+ */
+export const getUserHistory = async () => {
+  const response = await apiClient.get('/api/history');
+  return response.data?.history || [];
+};
+
+/**
+ * Deletes a single scan history item belonging to the current user.
+ */
+export const deleteScanHistory = async (scanId) => {
+  const response = await apiClient.delete(`/api/history/${scanId}`);
+  return response.data;
+};
+
+/* ==========================================================================
+   INFERENCE & PREDICTION APIS
+   ========================================================================== */
+
+/**
+ * Real API call sending image payload to Flask backend on port 5000.
+ */
+export const predictDiseaseReal = async (imageFile) => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  const response = await apiClient.post('/predict', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 30000,
+  });
+  return response.data;
+};
+
+/**
+ * Explicit Mock/Demo simulation mode (only when activated by the user).
  */
 export const predictDiseaseMock = async (imageFile) => {
-  // Simulate 1.8s neural network inference delay
-  await new Promise((resolve) => setTimeout(resolve, 1800));
+  // Simulate 1.6s neural network inference delay
+  await new Promise((resolve) => setTimeout(resolve, 1600));
 
   const mockDatabase = [
     {
@@ -153,21 +286,62 @@ export const predictDiseaseMock = async (imageFile) => {
   };
 };
 
-/**
- * Real API call sending image payload to Flask backend on port 5000.
- */
-export const predictDiseaseReal = async (imageFile) => {
-  const formData = new FormData();
-  formData.append('image', imageFile);
+/* ==========================================================================
+   ADMIN & BIOTECH REVIEW APIS (Admin Only)
+   ========================================================================== */
 
-  try {
-    const response = await axios.post(`${BACKEND_URL}/predict`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 15000,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('AgroDrishti Backend Error:', error);
-    throw error;
-  }
+/**
+ * Returns real aggregate system counts from SQLite.
+ */
+export const getAdminStats = async () => {
+  const response = await apiClient.get('/api/admin/stats');
+  return response.data;
+};
+
+/**
+ * Fetches user list with roles and creation dates (excluding passwords).
+ */
+export const getAdminUsers = async () => {
+  const response = await apiClient.get('/api/admin/users');
+  return response.data?.users || [];
+};
+
+/**
+ * Updates a user's role ('user' or 'admin').
+ */
+export const updateUserRole = async (userId, role) => {
+  const response = await apiClient.put(`/api/admin/users/${userId}/role`, { role });
+  return response.data;
+};
+
+/**
+ * Fetches active bio-solutions and pending drafts.
+ */
+export const getAdminSolutions = async () => {
+  const response = await apiClient.get('/api/admin/solutions');
+  return response.data;
+};
+
+/**
+ * Submits a new biotech solution draft for admin review.
+ */
+export const submitSolutionDraft = async (payload) => {
+  const response = await apiClient.post('/api/admin/solutions/draft', payload);
+  return response.data;
+};
+
+/**
+ * Approves a solution draft and applies it to live bio_solutions.json.
+ */
+export const approveSolutionDraft = async (draftId) => {
+  const response = await apiClient.post(`/api/admin/solutions/draft/${draftId}/approve`);
+  return response.data;
+};
+
+/**
+ * Rejects a solution draft.
+ */
+export const rejectSolutionDraft = async (draftId) => {
+  const response = await apiClient.post(`/api/admin/solutions/draft/${draftId}/reject`);
+  return response.data;
 };

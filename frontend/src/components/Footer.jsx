@@ -49,11 +49,16 @@ const Footer = ({ language }) => {
 
         </div>
 
-        {/* Bottom copyright notice */}
-        <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border/40 text-center text-[11px] text-gray-400 dark:text-gray-500">
-          <p>
+        {/* Bottom copyright notice & KVK Educational Disclaimer */}
+        <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border/40 text-center space-y-2">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+            ⚠️ {language === 'hi'
+              ? 'शैक्षिक एआई प्रोटोटाइप: खेत में किसी भी जैविक उपाय के प्रयोग से पहले नजदीकी कृषि विज्ञान केंद्र (KVK) या कृषि विशेषज्ञ की सलाह अवश्य लें।'
+              : 'Educational AI Prototype: Consult a local Krishi Vigyan Kendra (KVK) or agricultural extension specialist before field application.'}
+          </p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
             © {new Date().getFullYear()} AgroDrishti. {language === 'hi' ? 'सर्वाधिकार सुरक्षित।' : 'All rights reserved.'} • 
-            <span className="ml-1 text-primary dark:text-secondary">Photo खींचो, बीमारी भगाओ</span>
+            <span className="ml-1 text-primary dark:text-secondary font-bold">Photo खींचो, बीमारी भगाओ</span>
           </p>
         </div>
       </div>

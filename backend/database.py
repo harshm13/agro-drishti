@@ -366,3 +366,4 @@ def update_solution_draft_status(draft_id: int, status: str, db_path: Optional[s
             return cursor.rowcount > 0
     finally:
         conn.close()
+

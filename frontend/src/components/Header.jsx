@@ -1,5 +1,5 @@
 import React from 'react';
-import { Leaf, Sun, Moon, Sparkles, Activity } from 'lucide-react';
+import { Leaf, Sun, Moon, Sparkles, Activity, LogIn, LogOut, ShieldCheck } from 'lucide-react';
 import LanguageToggle from './LanguageToggle';
 
 const Header = ({
@@ -10,6 +10,11 @@ const Header = ({
   backendOnline,
   useMockMode,
   setUseMockMode,
+  currentUser,
+  onOpenAuthModal,
+  onLogout,
+  activeTab = 'scanner',
+  setActiveTab = () => {},
 }) => {
   return (
     <header className="relative w-full bg-gradient-to-r from-primary-700 via-primary-600 to-primary-500 text-white shadow-xl overflow-hidden">
@@ -44,8 +49,34 @@ const Header = ({
             </div>
           </div>
 
-          {/* Action Controls: Live Status, Mock Toggle, Dark Mode, Language */}
+          {/* Action Controls: Live Status, Mock Toggle, Dark Mode, Language, Auth */}
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            
+            {/* Admin Switcher Toggle (Visible only if current user is admin) */}
+            {currentUser && currentUser.role === 'admin' && (
+              <button
+                type="button"
+                onClick={() => setActiveTab(activeTab === 'scanner' ? 'admin' : 'scanner')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md transition-all shadow-sm ${
+                  activeTab === 'admin'
+                    ? 'bg-amber-400 text-amber-950 border-amber-300 shadow-amber-500/20 font-extrabold'
+                    : 'bg-white/20 hover:bg-white/30 text-white border-white/30'
+                }`}
+              >
+                {activeTab === 'admin' ? (
+                  <>
+                    <Leaf className="w-3.5 h-3.5 text-emerald-900" />
+                    <span>{language === 'hi' ? '🌱 स्कैनर पर लौटें' : '🌱 Scanner'}</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+                    <span>{language === 'hi' ? '🛡️ एडमिन पोर्टल' : '🛡️ Admin Portal'}</span>
+                  </>
+                )}
+              </button>
+            )}
+
             {/* Backend Connectivity Status Badge */}
             <button
               type="button"
@@ -95,6 +126,48 @@ const Header = ({
 
             {/* Language Selector */}
             <LanguageToggle language={language} setLanguage={setLanguage} />
+
+            {/* User Auth Control */}
+            {!currentUser ? (
+              <button
+                type="button"
+                onClick={onOpenAuthModal}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/20 hover:bg-white/30 active:scale-95 text-white border border-white/30 backdrop-blur-md transition-all shadow-sm"
+              >
+                <LogIn className="w-3.5 h-3.5 text-emerald-200" />
+                <span>{language === 'hi' ? 'लॉगिन / खाता' : 'Login / Register'}</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 bg-black/25 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/40 border border-emerald-400/40 flex items-center justify-center text-xs font-bold text-white uppercase">
+                    {currentUser.name ? currentUser.name.charAt(0) : 'U'}
+                  </div>
+                  <span className="text-xs font-semibold max-w-[85px] sm:max-w-[110px] truncate text-white" title={currentUser.name}>
+                    {currentUser.name}
+                  </span>
+                  <span
+                    className={`px-1.5 py-0.5 text-[10px] uppercase font-bold rounded-full ${
+                      currentUser.role === 'admin'
+                        ? 'bg-amber-400 text-amber-950 font-black'
+                        : 'bg-emerald-400/30 text-emerald-200 border border-emerald-400/40'
+                    }`}
+                  >
+                    {currentUser.role}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  title={language === 'hi' ? 'लॉगआउट करें' : 'Logout'}
+                  className="p-1 rounded-full text-emerald-200 hover:text-white hover:bg-white/20 transition-colors ml-0.5"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
           </div>
 
         </div>
