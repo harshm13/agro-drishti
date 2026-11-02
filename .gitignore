@@ -19,8 +19,7 @@ frontend/dist/
 
 # Large Model Checkpoints & Datasets
 *.h5
-backend/models/*.h5
-model/*.h5
+!backend/models/agro_drishti_model.h5
 data/
 PlantVillage/
 *.JPG
