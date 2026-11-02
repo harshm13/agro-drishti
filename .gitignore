@@ -41,3 +41,12 @@ yarn-error.log*
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# SQLite Databases
+*.db
+*.sqlite
+*.sqlite3
+backend/*.db
+
+# Legacy archive
+legacy_archive/
