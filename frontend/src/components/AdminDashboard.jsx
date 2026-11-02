@@ -955,3 +955,4 @@ const AdminDashboard = ({ currentUser, language, onBackToScanner }) => {
 };
 
 export default AdminDashboard;
+
