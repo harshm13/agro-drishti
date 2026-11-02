@@ -143,40 +143,14 @@ export const predictDiseaseMock = async (imageFile) => {
         { disease: 'Tomato_Leaf_Mold', confidence: 88.4 },
         { disease: 'Tomato_Early_blight', confidence: 8.5 }
       ]
-    },
-    {
-      disease: 'Potato___Early_blight',
-      confidence: 95.1,
-      is_healthy: false,
-      solution: {
-        name_en: 'Potato Early Blight',
-        name_hi: 'आलू अगेती झुलसा (Early Blight)',
-        status_en: '⚠️ Infected (Potato Early Blight)',
-        status_hi: '⚠️ रोग ग्रस्त (आलू अगेती झुलसा)',
-        dosage: '5 ml Neem Oil / Liter (or 5g Trichoderma viride)',
-        frequency: 'Every 7-10 days in early morning',
-        seasonal_tip: 'Remove affected lower leaves immediately. Prevent wet mud splash during irrigation.',
-        steps_en: {
-          prep: 'Mix 5 ml pure Neem Oil per liter of water with 1 ml mild soap emulsifier, OR dissolve 5g Trichoderma viride powder per liter.',
-          apply: 'Spray thoroughly on both upper and lower potato leaf surfaces every 7-10 days during early morning or late evening.',
-          prevent: 'Prune affected lower foliage and discard safely away from crops. Use furrow or drip irrigation to keep canopy dry.'
-        },
-        steps_hi: {
-          prep: 'नीम का तेल 5 मिली प्रति लीटर पानी (1 मिली लिक्विड सोप मिलाकर) या 5 ग्राम ट्राइकोडर्मा विरिडी पाउडर प्रति लीटर पानी में अच्छी तरह घोलें।',
-          apply: 'हर 7 से 10 दिनों में सुबह की पहली धूप या शाम को आलू के पत्तों पर दोनों तरफ गहरा छिड़काव करें।',
-          prevent: 'निचले संक्रमित पत्तों को तुरंत काटकर खेत से दूर नष्ट करें। ड्रिप या जमीन की सतह पर सिंचाई करें।'
-        },
-        audio_en: 'AgroDrishti diagnosis: Potato Early Blight detected. Spray 5 ml Neem oil per liter of water every 7 to 10 days.',
-        audio_hi: 'एग्रोदृष्टि निदान: आपके आलू के पौधे में अगेती झुलसा रोग पाया गया है। पांच मिलीलीटर नीम तेल प्रति लीटर पानी में मिलाकर छिड़काव करें।'
-      },
-      top_predictions: [
-        { disease: 'Potato___Early_blight', confidence: 95.1 },
-        { disease: 'Tomato_Early_blight', confidence: 3.8 }
-      ]
     }
   ];
 
-  return mockDatabase[Math.floor(Math.random() * mockDatabase.length)];
+  const picked = mockDatabase[Math.floor(Math.random() * mockDatabase.length)];
+  return {
+    ...picked,
+    is_demo: true
+  };
 };
 
 /**

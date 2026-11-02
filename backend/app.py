@@ -40,11 +40,11 @@ for k, v in bio_solutions.items():
     normalized_solutions[normalize_key(k)] = v
 
 # Map model output neuron index to canonical disease identifiers
-# Trained nodes: 0 -> Potato Early Blight, 1 -> Tomato Early Blight, 2 -> Tomato Late Blight, 3 -> Tomato Healthy
+# Trained on 4 Tomato classes: 0 -> Tomato Early Blight, 1 -> Tomato Late Blight, 2 -> Tomato Leaf Mold, 3 -> Tomato Healthy
 model_class_map = {
-    0: 'Potato___Early_blight',
-    1: 'Tomato_Early_blight',
-    2: 'Tomato_Late_blight',
+    0: 'Tomato_Early_blight',
+    1: 'Tomato_Late_blight',
+    2: 'Tomato_Leaf_Mold',
     3: 'Tomato_healthy'
 }
 
@@ -91,8 +91,8 @@ def predict():
         
         # Resize to 150x150 for CNN input
         image = image.resize((150, 150))
-        # Custom CNN model expects normalized [0.0, 1.0] float32 tensor
-        image_array = np.array(image, dtype=np.float32) / 255.0
+        # MobileNetV2 scaling: [-1.0, 1.0] normalized float32 tensor
+        image_array = (np.array(image, dtype=np.float32) / 127.5) - 1.0
         image_array = np.expand_dims(image_array, axis=0)
         
         # Run inference

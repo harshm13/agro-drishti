@@ -172,6 +172,23 @@ const ResultCard = ({ result, language }) => {
       {/* Ambient background decoration */}
       <div className="absolute top-0 right-0 w-52 h-52 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
 
+      {/* Explicit Demo Warning Banner */}
+      {result.is_demo && (
+        <div className="mb-4 px-4 py-2.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-bold flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span>
+              {language === 'hi'
+                ? '⚠️ डेमो — यह वास्तविक निदान नहीं है (सिम्युलेटर मोड)'
+                : '⚠️ DEMO — NOT A REAL DIAGNOSIS (Demo Mode Active)'}
+            </span>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full bg-amber-200/80 dark:bg-amber-900/80 text-[10px] tracking-wider uppercase font-mono font-extrabold">
+            DEMO
+          </span>
+        </div>
+      )}
+
       {/* Header: Disease Name & Severity Badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200/80 dark:border-dark-border pb-5">
         <div>

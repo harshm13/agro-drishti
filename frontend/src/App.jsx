@@ -78,14 +78,18 @@ function App() {
           data = await predictDiseaseReal(selectedImage);
           setBackendOnline(true);
         } catch (backendErr) {
-          console.warn('Real backend call failed, falling back to mock simulator:', backendErr);
+          console.error('Real backend call failed:', backendErr);
+          setBackendOnline(false);
+          const errorMsg = backendErr.response?.data?.error
+            || (language === 'hi'
+                ? 'बैकएंड सर्वर (http://localhost:5000) ऑफ़लाइन है। कृपया Flask बैकएंड चालू करें या ऊपर "सिम्युलेशन मोड" चुनें।'
+                : 'Flask backend (http://localhost:5000) is offline or failed. Please check the backend or switch to Demo mode.');
           setStatusMessage({
-            type: 'warning',
-            text: language === 'hi'
-              ? 'बैकएंड (localhost:5000) से संपर्क नहीं हुआ, सिम्युलेटर से परिणाम तैयार किया गया।'
-              : 'Backend (localhost:5000) unreachable. Loaded result via AI simulator.'
+            type: 'error',
+            text: errorMsg
           });
-          data = await predictDiseaseMock(selectedImage);
+          setPredictionResult(null);
+          return; // Strictly DO NOT fall back to mock data silently
         }
       } else {
         data = await predictDiseaseMock(selectedImage);
@@ -104,19 +108,21 @@ function App() {
         });
       }
 
-      // Add to recent scans history
-      const confVal = typeof data.confidence === 'number' && data.confidence <= 1.0 ? Math.round(data.confidence * 100) : Math.round(data.confidence);
-      const historyItem = {
-        id: Date.now(),
-        disease: data.disease,
-        confidence: confVal,
-        is_healthy: data.is_healthy,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        preview: previewUrl,
-        resultData: data
-      };
+      // Add to recent scans history only if real prediction (never save demo data as real history)
+      if (!useMockMode && !data.is_demo) {
+        const confVal = typeof data.confidence === 'number' && data.confidence <= 1.0 ? Math.round(data.confidence * 100) : Math.round(data.confidence);
+        const historyItem = {
+          id: Date.now(),
+          disease: data.disease,
+          confidence: confVal,
+          is_healthy: data.is_healthy,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          preview: previewUrl,
+          resultData: data
+        };
 
-      setRecentScans((prev) => [historyItem, ...prev.slice(0, 4)]);
+        setRecentScans((prev) => [historyItem, ...prev.slice(0, 4)]);
+      }
 
     } catch (err) {
       console.error('Fatal diagnosis error:', err);
