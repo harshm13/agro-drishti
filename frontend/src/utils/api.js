@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 // Backend Base URL
-export const BACKEND_URL = 'http://localhost:5000';
-
+export const BACKEND_URL = '';
 // In-memory CSRF Token Storage
 let inMemoryCsrfToken = null;
 
